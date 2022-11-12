@@ -18,9 +18,11 @@ useEffect(() => {
         const getMovies = async () => {
             const { results } = await searchMovies(searchString);
 
-            setMovies(results);
-            setMovieToFind(searchString);
+            if (results.length === 0) {
+                Notiflix.Notify.failure('We did not found anything! Please change your request and try again');
+        }
 
+            setMovies(results);   
         };
 
         getMovies();
@@ -29,20 +31,15 @@ useEffect(() => {
 
 const handleSubmit = async e => {
     e.preventDefault();
+    const searchString = new URLSearchParams(location.search).get('query');
 
-    if (movieToFind.trim()) {
-        const { results } = await searchMovies(movieToFind);
+    const query = movieToFind.trim();
 
-        setMovies(results);
-        setMovieToFind('');
-
-        if (results.length === 0) {
-            Notiflix.Notify.failure('We did not found anything! Please change your request and try again');
-        }
-
+    if (query || query !== searchString) {
+     
         history({
             ...location,
-            search: `query=${movieToFind}`,
+            search: `query=${query}`,
         });
     }
 };
